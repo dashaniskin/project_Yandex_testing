@@ -1,0 +1,21 @@
+SELECT c.login AS courier_login, COUNT(o.id) AS in_delivery_count
+FROM "Couriers" c, "Orders" o
+WHERE c.id=o."courierld" AND  o."inDelivery" = true
+GROUP BY  c.login;
+
+SELECT
+    o.track AS tracker,    -- Номер заказа
+    CASE
+        WHEN o."finished" = true THEN 2     -- Если finished = true, статус = 2
+        WHEN o."cancelled" = true THEN -1   -- Если cancelled = true, статус = -1
+        WHEN o."inDelivery" = true THEN 1   -- Если inDelivery = true, статус = 1
+        ELSE 0                              -- В остальных случаях статус = 0 
+    END AS status,         -- Числовой статус заказа
+    CASE
+        WHEN o."finished" = true THEN 'Завершен'     -- Статус 2: Завершен
+        WHEN o."cancelled" = true THEN 'Отменен'     -- Статус -1: Отменен
+        WHEN o."inDelivery" = true THEN 'В доставке' -- Статус 1: В доставке
+        ELSE 'Новый'                                -- Статус 0: Новый
+    END AS status_name     -- Имя статуса
+FROM
+    "Orders" o;           -- Таблица заказов
